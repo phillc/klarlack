@@ -38,6 +38,39 @@ Start up a local varnishd with <tt>-T 127.0.0.1:6082</tt>. Then run
 
 http://dict.leo.org/?search=klarlack
 
+=== MClient
+
+config/varnish.yml
+
+  development:
+    cache1:
+      port: 6082
+      host: localhost
+  test:
+    cache1:
+      port: 6082
+      host: localhost
+  production:
+    cache1:
+      port: 6082
+      host: localhost
+    cache2:
+      port: 6083
+      host: 127.0.0.1
+
+Lets purge all blog posts from all cache servers...
+      
+  require 'rubygems'
+  require 'klarlack'
+      
+  >> varnish = Varnish::MClient.new
+  => #<Varnish::MClient:0x26c9fc4 @config={:cache2=>{"port"=>6083, "host"=>"127.0.0.1"}, :cache1=>{"port"=>6082, "host"=>"localhost"}}, @servers={:cache2=>#<Varnish::Client:0x26c0668 @keep_alive=false, @timeout=1, @mutex=#<Mutex:0x26c0564>, @port=6083, @host="127.0.0.1">, :cache1=>#<Varnish::Client:0x26c04c4 @keep_alive=false, @timeout=1, @mutex=#<Mutex:0x26c03d4>, @port=6082, @host="localhost">}>
+  >> varnish.purge :url, "^/posts/.*"
+  => {:cache2=>true, :cache1=>true}
+
+
 === Copyright
 
 Copyright (c) 2009 Max Schöfmann. Distributed under the MIT-License
+
+Modified by Phillip Campbell
